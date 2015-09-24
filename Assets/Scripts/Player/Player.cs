@@ -2,22 +2,23 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
-    private Player() { }
-
     private struct Consts
     {
-        public enum StatusType
-        {
-            Idle,
-            Walk,
-        }
+        
+    }
+    public enum StatusType
+    {
+        Idle,
+        Walk,
     }
 
-    private static Consts.StatusType Status;
+    private static StatusType Status;
+
+    private Player() { }
 
     private void Start()
     {
-        Status = Consts.StatusType.Idle; 
+        Status = StatusType.Idle; 
     }
 
     private void Update()
@@ -36,10 +37,10 @@ public class Player : MonoBehaviour {
 
     public static void SetStatusToIdle()
     {
-        Status = Consts.StatusType.Idle;
+        Status = StatusType.Idle;
     }
     public static void SetStatusToWalk()
     {
-        Status = Consts.StatusType.Walk;
+        Status = StatusType.Walk;
     }
 }

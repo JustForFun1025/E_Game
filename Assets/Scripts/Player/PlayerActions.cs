@@ -20,6 +20,7 @@ public class PlayerActions : MonoBehaviour {
     }
     private void DoWalk(string tag)
     {
+        GetComponent<Animator>().SetBool("Walk", true);
         Vector3 position = GetComponent<Rigidbody2D>().position;
         switch (tag)
         {
@@ -30,15 +31,21 @@ public class PlayerActions : MonoBehaviour {
                 GetComponent<Rigidbody2D>().position = new Vector3(position.x, position.y - Consts.MoveUnit, position.z);
                 break;
             case "Left":
-                GetComponent<Rigidbody2D>().position = new Vector3(position.x - Consts.MoveUnit, position.y, position.z);
+                GetComponent<Rigidbody2D>().velocity = Vector3.left;
                 break;
             case "Right":
-                GetComponent<Rigidbody2D>().position = new Vector3(position.x + Consts.MoveUnit, position.y, position.z);
+                GetComponent<Rigidbody2D>().velocity = Vector3.right;
                 break;
             default:
                 //
                 break;
         }
+    }
+    
+    private void DoIdle(string tag)
+    {
+        GetComponent<Animator>().SetBool("Walk", false);
+        GetComponent<Rigidbody2D>().velocity = Vector3.zero;
     }
 
     void Start()
@@ -47,5 +54,6 @@ public class PlayerActions : MonoBehaviour {
         Controller.AddInputMonitor("Down", DoWalk);
         Controller.AddInputMonitor("Left", DoWalk);
         Controller.AddInputMonitor("Right", DoWalk);
+        Controller.AddInputMonitor("Default", DoIdle);
     }
 }

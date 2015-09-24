@@ -7,7 +7,7 @@ public class Controller : MonoBehaviour
 {
     private struct Consts
     {
-        public const float TimeIntervalToJudgeInput = 0.4f;
+        public const float TimeIntervalToJudgeInput = 1.0f;
     }
     private enum OperateType
     {
@@ -21,6 +21,7 @@ public class Controller : MonoBehaviour
     {
         public static OperateType CurrentInput;
         public static OperateType NextInput;
+        public static bool IsContinuous;
     }
 
     private float TimeInterval;
@@ -33,6 +34,7 @@ public class Controller : MonoBehaviour
         TimeInterval = 0;
         InputCache.CurrentInput = OperateType.Default;
         InputCache.NextInput = OperateType.Default;
+        InputCache.IsContinuous = false;
     }
 
     private void SaveInputToCache()
@@ -41,7 +43,7 @@ public class Controller : MonoBehaviour
         else if (Input.GetKey("s")) InputCache.NextInput = OperateType.Down;
         else if (Input.GetKey("a")) InputCache.NextInput = OperateType.Left;
         else if (Input.GetKey("d")) InputCache.NextInput = OperateType.Right;
-        else if (Input.GetKeyUp("w") || Input.GetKeyUp("s") || Input.GetKeyUp("a") || Input.GetKeyUp("d")) InputCache.NextInput = OperateType.Default;
+        else if (Input.GetKeyUp("w") || Input.GetKeyUp("s") || Input.GetKeyUp("a") || Input.GetKeyUp("d")) InputCache.IsContinuous = false;
     }
 
     private bool TimeToHandleInput()
@@ -71,13 +73,21 @@ public class Controller : MonoBehaviour
     private void Update()
     {
         SaveInputToCache();
-        if (TimeToHandleInput()) DoEvents(InputCache.NextInput.ToString());
+        
+    }
+    private void FixedUpdate()
+    {
+        if (TimeToHandleInput())
+        {
+            DoEvents(InputCache.NextInput.ToString());
+            if (!InputCache.IsContinuous) InputCache.NextInput = OperateType.Default;
+        }
     }
 
     // Public Function
 
     /// <summary>
-    /// 监听用户输入。
+    /// 监听用户输入，以带输入类型标签回调所提供的函数。
     /// </summary>
     /// <param name="tag">输入类型标签如："Up","Down","Left","Right"...</param>
     /// <param name="dEvent">相应的触发事件如:doWalk</param>
