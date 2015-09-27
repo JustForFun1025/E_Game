@@ -7,7 +7,6 @@ public class Controller : MonoBehaviour
 {
     private struct Consts
     {
-        public const float TimeIntervalToJudgeInput = 0.4f;
     }
     private enum OperateType
     {
@@ -17,42 +16,26 @@ public class Controller : MonoBehaviour
         Left,
         Right,
     }
-    private struct InputCache
-    {
-        public static OperateType CurrentInput;
-        public static OperateType NextInput;
-    }
 
-    private float TimeInterval;
+    private OperateType InputCache;
     private static InputEvent InputEvents = new InputEvent();
 
     private Controller() { }
 
     private void Start()
     {
-        TimeInterval = 0;
-        InputCache.CurrentInput = OperateType.Default;
-        InputCache.NextInput = OperateType.Default;
+        InputCache = OperateType.Default;
     }
 
-    private void SaveInputToCache()
+    private bool CheckInputCacheChange()
     {
-        if (Input.GetKey("w")) InputCache.NextInput = OperateType.Up;
-        else if (Input.GetKey("s")) InputCache.NextInput = OperateType.Down;
-        else if (Input.GetKey("a")) InputCache.NextInput = OperateType.Left;
-        else if (Input.GetKey("d")) InputCache.NextInput = OperateType.Right;
-        else if (Input.GetKeyUp("w") || Input.GetKeyUp("s") || Input.GetKeyUp("a") || Input.GetKeyUp("d")) InputCache.NextInput = OperateType.Default;
-    }
-
-    private bool TimeToHandleInput()
-    {
-        if (TimeInterval > Consts.TimeIntervalToJudgeInput)
-        {
-            TimeInterval -= Consts.TimeIntervalToJudgeInput;
-            return true;
-        }
-        TimeInterval += Time.deltaTime;
-        return false;
+        if (Input.GetKey("w")) InputCache = OperateType.Up;
+        else if (Input.GetKey("s")) InputCache = OperateType.Down;
+        else if (Input.GetKey("a")) InputCache = OperateType.Left;
+        else if (Input.GetKey("d")) InputCache = OperateType.Right;
+        else if (Input.GetKeyUp("w") || Input.GetKeyUp("s") || Input.GetKeyUp("a") || Input.GetKeyUp("d")) InputCache = OperateType.Default;
+        else return false;
+        return true;
     }
 
     private void DoEvents(string tag)
@@ -70,14 +53,13 @@ public class Controller : MonoBehaviour
 
     private void Update()
     {
-        SaveInputToCache();
-        if (TimeToHandleInput()) DoEvents(InputCache.NextInput.ToString());
+        if (CheckInputCacheChange())    DoEvents(InputCache.ToString());
     }
 
     // Public Function
 
     /// <summary>
-    /// 监听用户输入。
+    /// 监听用户输入，以带输入类型标签回调所提供的函数。
     /// </summary>
     /// <param name="tag">输入类型标签如："Up","Down","Left","Right"...</param>
     /// <param name="dEvent">相应的触发事件如:doWalk</param>
