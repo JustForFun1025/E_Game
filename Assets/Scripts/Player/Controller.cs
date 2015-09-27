@@ -7,7 +7,6 @@ public class Controller : MonoBehaviour
 {
     private struct Consts
     {
-        public const float TimeIntervalToJudgeInput = 1.0f;
     }
     private enum OperateType
     {
@@ -17,44 +16,26 @@ public class Controller : MonoBehaviour
         Left,
         Right,
     }
-    private struct InputCache
-    {
-        public static OperateType CurrentInput;
-        public static OperateType NextInput;
-        public static bool IsContinuous;
-    }
 
-    private float TimeInterval;
+    private OperateType InputCache;
     private static InputEvent InputEvents = new InputEvent();
 
     private Controller() { }
 
     private void Start()
     {
-        TimeInterval = 0;
-        InputCache.CurrentInput = OperateType.Default;
-        InputCache.NextInput = OperateType.Default;
-        InputCache.IsContinuous = false;
+        InputCache = OperateType.Default;
     }
 
-    private void SaveInputToCache()
+    private bool CheckInputCacheChange()
     {
-        if (Input.GetKey("w")) InputCache.NextInput = OperateType.Up;
-        else if (Input.GetKey("s")) InputCache.NextInput = OperateType.Down;
-        else if (Input.GetKey("a")) InputCache.NextInput = OperateType.Left;
-        else if (Input.GetKey("d")) InputCache.NextInput = OperateType.Right;
-        else if (Input.GetKeyUp("w") || Input.GetKeyUp("s") || Input.GetKeyUp("a") || Input.GetKeyUp("d")) InputCache.IsContinuous = false;
-    }
-
-    private bool TimeToHandleInput()
-    {
-        if (TimeInterval > Consts.TimeIntervalToJudgeInput)
-        {
-            TimeInterval -= Consts.TimeIntervalToJudgeInput;
-            return true;
-        }
-        TimeInterval += Time.deltaTime;
-        return false;
+        if (Input.GetKey("w")) InputCache = OperateType.Up;
+        else if (Input.GetKey("s")) InputCache = OperateType.Down;
+        else if (Input.GetKey("a")) InputCache = OperateType.Left;
+        else if (Input.GetKey("d")) InputCache = OperateType.Right;
+        else if (Input.GetKeyUp("w") || Input.GetKeyUp("s") || Input.GetKeyUp("a") || Input.GetKeyUp("d")) InputCache = OperateType.Default;
+        else return false;
+        return true;
     }
 
     private void DoEvents(string tag)
@@ -72,16 +53,7 @@ public class Controller : MonoBehaviour
 
     private void Update()
     {
-        SaveInputToCache();
-        
-    }
-    private void FixedUpdate()
-    {
-        if (TimeToHandleInput())
-        {
-            DoEvents(InputCache.NextInput.ToString());
-            if (!InputCache.IsContinuous) InputCache.NextInput = OperateType.Default;
-        }
+        if (CheckInputCacheChange())    DoEvents(InputCache.ToString());
     }
 
     // Public Function
