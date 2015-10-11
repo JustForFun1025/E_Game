@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Glass : MonoBehaviour {
+public class Grass : MonoBehaviour {
 
     private const float TimeOfDestory = 0.5f;
 
@@ -17,9 +17,10 @@ public class Glass : MonoBehaviour {
         GrassAnimator.StopRecording();
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.name == "player")
+        Debug.Log("!!!!!!!!");
+        if (other.collider.tag == "Player")
         {
             GrassAnimator.SetTrigger("Destory");
             Destoryed = true;

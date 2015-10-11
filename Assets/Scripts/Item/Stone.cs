@@ -7,7 +7,7 @@ public class Stone : MonoBehaviour
     private struct Consts
     {
         public const float FixedDistance = 0.2f;
-        public const float TimeToJudgeScroll = 0.1f;
+        public const float TimeToJudgeScroll = 0.2f;
         public const float TimeToReadyScroll = 0.1f;
         public const float TimeToScroll = 1.0f;
     }
@@ -21,7 +21,7 @@ public class Stone : MonoBehaviour
         public Collider2D RightDown;
     }
 
-    private string[] UnstableNameList;
+    private string[] UnstableTagList;
     private Transform StoneImage;
     private Rigidbody2D StoneRigibody;
     private SupportedObject Supported;
@@ -34,7 +34,7 @@ public class Stone : MonoBehaviour
 
     private void Start()
     {
-        UnstableNameList = new string[] { "grass" };        // ### 不平稳承载物的名字请在这里注明。
+        UnstableTagList = new string[] { "Stone" };        // ### 不平稳承载物的标签请在这里注明。
         StoneImage = transform.FindChild("image");
         StoneRigibody = GetComponent<Rigidbody2D>();
         Supported.Down = null;
@@ -58,8 +58,8 @@ public class Stone : MonoBehaviour
 
     private bool IsUnstable(Collider2D obj)
     {
-        foreach (string name in UnstableNameList)
-            if (obj.name == name) return true;
+        foreach (string tag in UnstableTagList)
+            if (obj.tag == tag) return true;
         return false;
     }
 
